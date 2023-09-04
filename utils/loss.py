@@ -150,7 +150,7 @@ class ComputeLoss:
         # self.balance = {3: [4.0, 1.0, 0.4], 4: [4.0, 1.0, 0.25, 0.06], 5: [4.0, 1.0, 0.25, 0.06, .02]}[det.nl]
         self.balance = {3: [4.0, 1.0, 0.4]}.get(det.nl, [4.0, 1.0, 0.25, 0.06, .02])  # P3-P7
 
-        # 三个预测头的下采样率det.stride: [8, 16, 32]  .index(16): 求出下采样率stride=16的索引
+        # 三个预测头的下采样率det.stride: [8, 16, 32].index(16): 求出下采样率stride=16的索引
         # 这个参数会用来自动计算更新3个feature map的置信度损失系数self.balance
         self.ssi = list(det.stride).index(16) if autobalance else 0  # stride 16 index
 
@@ -167,6 +167,16 @@ class ComputeLoss:
             # getattr: 返回det对象的k属性
             # 所以这句话的意思: 讲det的k属性赋值给self.k属性 其中k in 'na', 'nc', 'nl', 'anchors'
             setattr(self, k, getattr(det, k))
+        '''
+        等价于
+        self.na = det.na  # number of anchors 3
+        self.nc = det.nc  # number of classes 80 
+        self.nl = det.nl  # number of layers 3
+        self.anchors = det.anchors  [[[1.25,1.625],[2.0,3.75],[4.125,2.875]],
+                                     [[1.875, 3.8125],[3.875,2.8125][3.6875,7.4375]],
+                                     [[3.625,2.8125],[4.875,6.1875],[11.65625,10.1875]]]
+        self.device = device
+        '''
 
     def __call__(self, p, targets):  # predictions, targets, model
         """
