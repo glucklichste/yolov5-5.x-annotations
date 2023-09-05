@@ -410,6 +410,11 @@ grid B中的标签在右上半部分，所以标签偏移0.5个gird到E中，A,B
                 pxy, pwh, _, pcls = pi[b, a, gj, gi].split((2, 2, 1, self.nc), 1)  # target-subset of predictions
 
                 # Regression
+                '''
+				xy的预测范围为-0.5~1.5
+                wh的预测范围是0~4倍anchor的w和h，
+                原理在代码后讲述。
+				'''
                 pxy = pxy.sigmoid() * 2 - 0.5
                 pwh = (pwh.sigmoid() * 2) ** 2 * anchors[i]
                 pbox = torch.cat((pxy, pwh), 1)  # predicted box
